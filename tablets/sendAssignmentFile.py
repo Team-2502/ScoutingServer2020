@@ -5,7 +5,7 @@ Copyright (c) 2019 FRC Team 1678: Citrus Circuits
 
 Sends assignment file to scout tablets over ADB.
 
-Verifies that the file is successfully transfered.
+Verifies that the filehv vh cgh fctf is successfully transfered.
 ADB stands for Android Debug Bridge."""
 # External imports
 import subprocess
@@ -19,8 +19,7 @@ DEVICE_NAMES = {
     'G000L40763270QKL': 'BLUE 1',
     'G000L40763270NX9': 'BLUE 2',
     'G000L40763270WLQ': 'BLUE 3',
-    'G000L40763270R0J': 'RED 2',
-    'G0W0H40470330BNR': 'Chairmans'
+    'G000L40763270R0J': 'RED 2'
 }
 
 ASSIGNMENT_FILE_PATH = '/Users/64013459//MMR-2019Server/assignments/BackupAssignments.txt'

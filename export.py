@@ -45,8 +45,8 @@ def upload_to_drive(filename):
 
 def export_spreadsheet():
     homeDir = os.path.expanduser('~')
-    teams = [json.loads(open(os.path.join(homeDir, 'MNDU-2020Server/cache/teams/', team)).read()) for team in os.listdir(os.path.join(homeDir, 'MNDU-2020Server/cache/teams')) if team != '.DS_Store']
-    timds = [json.loads(open(os.path.join(homeDir, 'MNDU-2020Server/cache/TIMDs/', timd)).read()) for timd in os.listdir(os.path.join(homeDir, 'MNDU-2020Server/cache/TIMDs')) if timd != '.DS_Store']
+    teams = [json.loads(open(os.path.join(homeDir, 'MNDU2-2020Server/cache/teams/', team)).read()) for team in os.listdir(os.path.join(homeDir, 'MNDU2-2020Server/cache/teams')) if team != '.DS_Store']
+    timds = [json.loads(open(os.path.join(homeDir, 'MNDU2-2020Server/cache/TIMDs/', timd)).read()) for timd in os.listdir(os.path.join(homeDir, 'MNDU2-2020Server/cache/TIMDs')) if timd != '.DS_Store']
 
     totals = ([key for key in teams[0]['totals'].keys()], 'totals')
     l3ms = ([key for key in teams[0]['l3ms'].keys()], 'l3ms')
@@ -57,7 +57,7 @@ def export_spreadsheet():
     percentages = ([key for key in teams[0]['percentages'].keys()], 'percentages')
     # sykes = ([key for key in teams[0]['sykes'].keys()], 'sykes')
 
-    header = ([key for key in timds[0]['header'].keys()], 'headers')
+    header = ([key for key in timds[0]['header'].keys()], 'header')
     climb = ([key for key in timds[0]['climb'].keys()], 'climb')
     calculated = ([key for key in timds[0]['calculated'].keys()], 'calculated')
 
@@ -76,14 +76,14 @@ def export_spreadsheet():
     raw_timd_sheet.cell(row=1, column=1).value = 'Team'
     raw_timd_sheet.cell(row=1, column=2).value = 'Match'
 
-    current_column = 2
+    current_column = 3
 
     for header in timdHeaders:
         for key in header[0]:
             raw_timd_sheet.cell(row=1, column=current_column).value = key
             current_column += 1
 
-    current_column = 3
+    current_column = 2
 
     for header in headers:
         for key in header[0]:
@@ -111,7 +111,9 @@ def export_spreadsheet():
 
             for header in timdHeaders:
                 for key in header[0]:
-                    raw_timd_sheet.cell(row=current_timd_row, column=current_column).value = team[header[1]][key]
+                    timd_component_header = timd[header[1]]
+                    if key in timd_component_header.keys():
+                        raw_timd_sheet.cell(row=current_timd_row, column=current_column).value = timd_component_header[key]
                     current_column += 1
 
             current_timd_row += 1

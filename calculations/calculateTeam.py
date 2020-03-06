@@ -9,6 +9,8 @@ TOTAL_AVERAGE_DATA_FIELDS = {
     'avgCellsScored': 'cellsScoredTeleop',
     'avgCellsScoredHigh': 'cellsScoredHighTeleop',
     'avgCellsScoredLow': 'cellsScoredLowTeleop',
+    'avgCellsScoredTrench': 'cellsScoredTrenchTeleop',
+    'avgCellsScoredField':'cellsScoredMiddleFieldTeleop',
     'avgTimeIncap': 'timeIncap',
     'avgTimeDefending': 'timeDefending',
     'avgTOC': 'trueOffensiveContribution'
@@ -43,8 +45,8 @@ MAX_DATA_FIELDS = {
 }
 
 PERCENT_SUCCESS_DATA_FIELDS = {
-    'shootingPercentageHighTeleop': {'teleop', 'shoot', 'innerPort', 'outerPort'},
-    'shootingPercentageLowTeleop': {'teleop', 'shoot', 'lowerGoal'}
+    'shootingPercentageHighTeleop': {'innerPort', 'outerPort'},
+    'shootingPercentageLowTeleop': {'lowerGoal'}
 }
 
 
@@ -82,10 +84,14 @@ def calculate_team(team_number, last_timd, is_json=False):
 
     l3m_timds = sorted(timds, key=lambda timd: timd['header']['matchNumber'])[-3:]
 
-    totals = {'cellsScoredHigh': stats.total_filter_values(stats.filter_timeline_actions(timds, actionType='shoot', actionTime='teleop'), 'outerPort', 'innerPort'),
-              'cellsScoredLow': stats.total_filter_values(stats.filter_timeline_actions(timds, actionType='shoot', actionTime='teleop'), 'lowerGoal'),
+    totals = {'cellsScoredHighTeleop': stats.total_filter_values(stats.filter_timeline_actions(timds, actionType='shoot', actionTime='teleop'), 'outerPort', 'innerPort'),
+              'cellsScoredLowTeleop': stats.total_filter_values(stats.filter_timeline_actions(timds, actionType='shoot', actionTime='teleop'), 'lowerGoal'),
               'timeDefending': sum([timd['calculated']['timeDefending'] for timd in timds]),
               'timeIncap': sum([timd['calculated']['timeIncap'] for timd in timds])}
+
+    for average_data_field, timd_data_field in TOTAL_AVERAGE_DATA_FIELDS.items():
+        totals[average_data_field] = stats.avg([timd['calculated'].get(timd_data_field) for timd in timds])
+    team['totals'] = totals
 
     team_abilities = {}
     team_abilities['shootCellsHigh'] = True if totals['cellsScoredHighTeleop'] > 0  else False
@@ -94,10 +100,6 @@ def calculate_team(team_number, last_timd, is_json=False):
     team_abilities['wheelSpunInMatch'] = True if len(stats.filter_timeline_actions(timds, actionType='wheel')) > 0 else False
     team_abilities['moveOffLineAuto'] = True if len([timd for timd in timds if timd['header']['leftLine']]) > 0 else False
     team['team_abilities'] = team_abilities
-
-    for average_data_field, timd_data_field in TOTAL_AVERAGE_DATA_FIELDS.items():
-        totals[average_data_field] = stats.avg([timd['calculated'].get(timd_data_field) for timd in timds])
-    team['totals'] = totals
 
     l3ms = {}
     for l3m_average_data_field, timd_data_field in L3M_AVERAGE_DATA_FIELDS.items():
@@ -125,7 +127,7 @@ def calculate_team(team_number, last_timd, is_json=False):
 
     percentages['leftInitLine'] = round(100 * (len([timd for timd in timds if timd['header']['leftLine']]) / len(timds))) if len(timds) is not 0 else 0
 
-    percentages['climbSuccessRate'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) / len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='fell')))) if len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) != 0 else None
+    percentages['climbSuccessRate'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) / len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='fell')))) if len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='fell')) != 0 else None
     percentages['levelClimbPercentage'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', levelClimb=True)) / len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')))) if len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) != 0 else None
     percentages['parkPercentage'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='parked')) / len(timds))) if len(timds) is not 0 else 0
     percentages['climbPercentage'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) / len(timds))) if len(timds) is not 0 else 0

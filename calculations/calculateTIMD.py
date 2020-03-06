@@ -61,8 +61,6 @@ def calculate_timd(compressed_timd, timd_name, test=False):
     else:
         decompressed_timd['calculated'] = calculate_statistics(decompressed_timd)
         decompressed_timd['climb'] = calculate_climb(decompressed_timd)
-        with open(os.path.join(os.path.expanduser('~/Desktop/ScoutingServer2020'), f'{timd_name}.json'), 'w') as file:
-            json.dump(decompressed_timd, file)
 
     if not test:
         print(f'{timd_name} decompressed')
@@ -92,6 +90,3 @@ def calculate_timd(compressed_timd, timd_name, test=False):
         print(f'{timd_name} uploaded to Firebase\n')
 
     return decompressed_timd
-
-
-calculate_timd("A1B5089CaDahEeFfUfTt|GkI0J0K0L1M1NmTaq,GkI0J0K0L3M3NpTaq,GkI0J0K2L0M2NpTan,GagRai,VVery last thing to have had defense", "test", True)

@@ -65,7 +65,7 @@ TEMP_TIMD_COMP_VALUES = {
     "am": "hanging",
     "an": "teleop",
     "ao": "initLine",
-    "ap": "failedClimb",
+    "ap": "fell",
     "aq": "auto"
 }
 SCOUT_NAME_VALUES = {
@@ -107,7 +107,7 @@ SCOUT_NAME_VALUES = {
 
 
 def decompress_timd(temp_timd):
-    header, timeline = temp_timd.split("|")
+    header, timeline, comment = temp_timd.split("|")
     decompressed_header = decompress_header(header)
     team_number = decompressed_header.get('teamNumber')
     match_number = decompressed_header.get('matchNumber')
@@ -115,7 +115,7 @@ def decompress_timd(temp_timd):
         decompressed_timd = {'header': decompressed_header, 'team_number': team_number, 'match_number': match_number}
     else:
         decompressed_timeline = decompress_timeline(timeline)
-        decompressed_timd = {'header': decompressed_header, 'timeline': decompressed_timeline, 'team_number': team_number, 'match_number': match_number}
+        decompressed_timd = {'header': decompressed_header, 'timeline': decompressed_timeline, 'team_number': team_number, 'match_number': match_number, 'comment': comment}
     return decompressed_timd
 
 
