@@ -111,6 +111,7 @@ def export_spreadsheet():
 
             for header in timdHeaders:
                 for key in header[0]:
+                    print(timd['team_number'])
                     timd_component_header = timd[header[1]]
                     if key in timd_component_header.keys():
                         raw_timd_sheet.cell(row=current_timd_row, column=current_column).value = timd_component_header[key]
@@ -123,4 +124,4 @@ def export_spreadsheet():
 
 if __name__ == "__main__":
     export_spreadsheet()
-    upload_to_drive('Test')
+    upload_to_drive('End of Friday')

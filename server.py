@@ -70,20 +70,20 @@ def run_server_comp():
                         team_num = temp_timd.key().split("-")[1]
                         calculateTeam.calculate_team(team_num, timd)
 
-                        export.export_spreadsheet()
-                        print("Data exported")
-                        export.upload_to_drive(" Post QM" + str(current_unfinished_match) + "Full Export")
-                        print("Data uploaded to Drive\n")
+                        #export.export_spreadsheet()
+                        #print("Data exported")
+                        #export.upload_to_drive(" Post QM" + str(current_unfinished_match) + "Full Export")
+                        #print("Data uploaded to Drive\n")
                         slack_client.chat_postMessage(
-                            channel="UC3TC3PN3",
-                            text="All TIMDs for Match " + str(current_unfinished_match) + "processed and data exported"
+                            channel="U7EA0HCJW",
+                            text="All TIMDs for Match " + str(current_unfinished_match) + "processed" # and data exported"
                         )
                         current_unfinished_match += 1
 
                 elif match_num > current_unfinished_match:
                     print("WARNING: MISSING TIMD FOR MATCH " + str(current_unfinished_match))
                     slack_client.chat_postMessage(
-                        channel="UC3TC3PN3",
+                        channel="U7EA0HCJW",
                         text="WARNING: TIMD for Match " + str(match_num) + " uploaded before Match " +
                              str(current_unfinished_match) + " had 6 TIMDs!"
                     )
@@ -100,7 +100,7 @@ def run_server_comp():
                         export.upload_to_drive(" Post QM" + str(match_num) + "Full Export")
                         print("Data uploaded to Drive\n")
                         slack_client.chat_postMessage(
-                            channel="UC3TC3PN3",
+                            channel="U7EA0HCJW",
                             text="All TIMDs for Match " + str(match_num) + "processed and data exported"
                         )
                     elif get_num_timds_for_match("QM" + str(match_num)) > 6:

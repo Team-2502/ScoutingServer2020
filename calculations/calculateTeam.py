@@ -6,7 +6,8 @@ import sensitiveInfo
 from utils import *
 
 TOTAL_AVERAGE_DATA_FIELDS = {
-    'avgCellsScored': 'cellsScoredTeleop',
+    'avgCellsScoredTele': 'cellsScoredTeleop',
+    'avgCellsScoredAuto': 'cellsScoredAuto',
     'avgCellsScoredHigh': 'cellsScoredHighTeleop',
     'avgCellsScoredLow': 'cellsScoredLowTeleop',
     'avgCellsScoredTrench': 'cellsScoredTrenchTeleop',
@@ -91,6 +92,8 @@ def calculate_team(team_number, last_timd, is_json=False):
 
     for average_data_field, timd_data_field in TOTAL_AVERAGE_DATA_FIELDS.items():
         totals[average_data_field] = stats.avg([timd['calculated'].get(timd_data_field) for timd in timds])
+
+    totals['cellsScored'] = totals['avgCellsScoredTele'] + totals['avgCellsScoredAuto']
     team['totals'] = totals
 
     team_abilities = {}
