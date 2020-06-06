@@ -4,6 +4,7 @@ import pyrebase
 
 import sensitiveInfo
 from utils import *
+from calculations import calculateTIMD
 
 TOTAL_AVERAGE_DATA_FIELDS = {
     'avgCellsScoredTele': 'cellsScoredTeleop',
@@ -14,21 +15,22 @@ TOTAL_AVERAGE_DATA_FIELDS = {
     'avgCellsScoredField':'cellsScoredMiddleFieldTeleop',
     'avgTimeIncap': 'timeIncap',
     'avgTimeDefending': 'timeDefending',
-    'avgTOC': 'trueOffensiveContribution'
+    'avgTOC': 'trueOffensiveContribution',
+    'avgCycles': 'totalCycles'
 }
 
 L3M_AVERAGE_DATA_FIELDS = {
-    'l3mCellsScored': 'cellsScoredTeleop',
-    'l3mCellsScoredHigh': 'cellsScoredHighTeleop',
-    'l3mCellsScoredLow': 'cellsScoredLowTeleop',
-    'l3mTimeIncap': 'timeIncap',
-    'l3mTimeDefending': 'timeDefending'
+    'l3mAvgCellsScored': 'cellsScoredTeleop',
+    'l3mAvgCellsScoredHigh': 'cellsScoredHighTeleop',
+    'l3mAvgCellsScoredLow': 'cellsScoredLowTeleop',
+    'l3mAvgTimeIncap': 'timeIncap',
+    'l3mAvgTimeDefending': 'timeDefending'
 }
 
 P75_DATA_FIELDS = {
-    'l3mCellsScored': 'cellsScoredTeleop',
-    'l3mCellsScoredHigh': 'cellsScoredHighTeleop',
-    'l3mCellsScoredLow': 'cellsScoredLowTeleop',
+    'p75CellsScored': 'cellsScoredTeleop',
+    'p75CellsScoredHigh': 'cellsScoredHighTeleop',
+    'p75CellsScoredLow': 'cellsScoredLowTeleop',
 }
 
 SD_DATA_FIELDS = {
@@ -46,8 +48,7 @@ MAX_DATA_FIELDS = {
 }
 
 PERCENT_SUCCESS_DATA_FIELDS = {
-    'shootingPercentageHighTeleop': {'innerPort', 'outerPort'},
-    'shootingPercentageLowTeleop': {'lowerGoal'}
+    'shootingPercentageHighTeleop': {'innerPort', 'outerPort'}
 }
 
 
@@ -63,11 +64,11 @@ def get_timds(team_number):
     return [json.loads(open(os.path.join(homeDir, 'MNDU2-2020Server/cache/TIMDs/', TIMD)).read()) for TIMD in TIMDs if int(TIMD.split('-')[1]) == int(team_number)]
 
 
-def calculate_team(team_number, last_timd, is_json=False):
-    if is_json is not False:
-        team = is_json
-        timds = team['timds']
-
+# If testing last_timd is actually a list of all timds that make up the team, otherwise just the last timd
+def calculate_team(team_number, last_timd, test=False):
+    if test is not False:
+        timds = [calculateTIMD.calculate_timd(timd, "test", True) for timd in last_timd]
+        team = {'teamNumber': team_number, 'timds': sorted(timds, key=lambda timd: timd['header']['matchNumber'])}
     else:
         try:
             team = get_team(team_number)
@@ -93,7 +94,7 @@ def calculate_team(team_number, last_timd, is_json=False):
     for average_data_field, timd_data_field in TOTAL_AVERAGE_DATA_FIELDS.items():
         totals[average_data_field] = stats.avg([timd['calculated'].get(timd_data_field) for timd in timds])
 
-    totals['cellsScored'] = totals['avgCellsScoredTele'] + totals['avgCellsScoredAuto']
+    totals['avgTotalCellsScored'] = totals['avgCellsScoredTele'] + totals['avgCellsScoredAuto']
     team['totals'] = totals
 
     team_abilities = {}
@@ -130,7 +131,7 @@ def calculate_team(team_number, last_timd, is_json=False):
 
     percentages['leftInitLine'] = round(100 * (len([timd for timd in timds if timd['header']['leftLine']]) / len(timds))) if len(timds) is not 0 else 0
 
-    percentages['climbSuccessRate'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) / len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='fell')))) if len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='fell')) != 0 else None
+    percentages['climbSuccessRate'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) / (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='fell')) + len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging'))))) if len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) != 0 else None
     percentages['levelClimbPercentage'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', levelClimb=True)) / len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')))) if len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) != 0 else None
     percentages['parkPercentage'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='parked')) / len(timds))) if len(timds) is not 0 else 0
     percentages['climbPercentage'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) / len(timds))) if len(timds) is not 0 else 0
@@ -145,18 +146,23 @@ def calculate_team(team_number, last_timd, is_json=False):
 
     # team['rankings'] = calculations.calculateRankings.calculate_rankings(int(team_number), team)
 
-    print(f'{team_number} calculated')
-
     homeDir = os.path.expanduser('~')
 
     pyrebase_config = {
         "apiKey": sensitiveInfo.firebase_api_key(),
-        "authDomain": "mndu2-2020.firebaseapp.com",
-        "databaseURL": "https://mndu2-2020.firebaseio.com",
-        "storageBucket": "mndu2-2020.appspot.com"
+        "authDomain": "development-2021.firebaseapp.com",
+        "databaseURL": "https://development-2021.firebaseio.com",
+        "storageBucket": "development-2021.appspot.com"
     }
 
-    if is_json is False:
+    if test is not False:
+        firebase = pyrebase.initialize_app(pyrebase_config)
+        database = firebase.database()
+        database.child("teams").child("test").set(team)
+
+    else:
+        print(f'{team_number} calculated')
+
         firebase = pyrebase.initialize_app(pyrebase_config)
         database = firebase.database()
 

@@ -57,18 +57,6 @@ def calculate_timd(compressed_timd, timd_name, test=False):
         decompressed_timd['calculated'] = calculate_statistics(decompressed_timd)
         decompressed_timd['climb'] = calculate_climb(decompressed_timd)
 
-    pyrebase_config = {
-        "apiKey": sensitiveInfo.firebase_api_key(),
-        "authDomain": "development-2021.firebaseapp.com",
-        "databaseURL": "https://development-2021.firebaseio.com",
-        "storageBucket": "development-2021.appspot.com"
-    }
-
-    firebase = pyrebase.initialize_app(pyrebase_config)
-    database = firebase.database()
-
-    database.child("TIMDs").child(timd_name).set(decompressed_timd)
-
     if not test:
         print(f'{timd_name} decompressed')
 
