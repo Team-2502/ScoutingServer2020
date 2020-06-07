@@ -104,14 +104,13 @@ def export_spreadsheet():
 
         current_team_row += 1
 
-        current_column = 3
         for timd in team['timds']:
+            current_column = 3
             raw_timd_sheet.cell(row=current_timd_row, column=1).value = timd['team_number']
             raw_timd_sheet.cell(row=current_timd_row, column=2).value = timd['match_number']
 
             for header in timdHeaders:
                 for key in header[0]:
-                    print(timd['team_number'])
                     timd_component_header = timd[header[1]]
                     if key in timd_component_header.keys():
                         raw_timd_sheet.cell(row=current_timd_row, column=current_column).value = timd_component_header[key]
@@ -124,4 +123,3 @@ def export_spreadsheet():
 
 if __name__ == "__main__":
     export_spreadsheet()
-    upload_to_drive('End of Friday')
