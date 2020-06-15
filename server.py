@@ -44,6 +44,9 @@ def run_server_testing():
         team_num = temp_timd.key().split("-")[1]
         calculateTeam.calculate_team(team_num, timd)
 
+    print("calced, exporting")
+    export.export_spreadsheet()
+
 
 def run_server_comp():
     slack_token = sensitiveInfo.slack_api_key()

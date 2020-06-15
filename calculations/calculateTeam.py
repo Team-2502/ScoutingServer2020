@@ -140,7 +140,7 @@ def calculate_team(team_number, last_timd, test=False):
 
     percentages['percentOfTimeIncap'] = round(100 * (team['totals']['timeIncap'] / (len(timds) * 150))) if len(timds) is not 0 else 0
 
-    percentages['percentOfMatchesNoShow'] = round(100 * (num_no_shows / num_matches + num_no_shows))
+    percentages['percentOfMatchesNoShow'] = round(100 * (num_no_shows / num_matches))
 
     team['percentages'] = percentages
 

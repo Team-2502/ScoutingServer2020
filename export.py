@@ -57,12 +57,12 @@ def export_spreadsheet():
     percentages = ([key for key in teams[0]['percentages'].keys()], 'percentages')
     # sykes = ([key for key in teams[0]['sykes'].keys()], 'sykes')
 
-    header = ([key for key in timds[0]['header'].keys()], 'header')
+    timdHeader = ([key for key in timds[0]['header'].keys()], 'header')
     climb = ([key for key in timds[0]['climb'].keys()], 'climb')
     calculated = ([key for key in timds[0]['calculated'].keys()], 'calculated')
 
     headers = [totals, l3ms, SDs, maxes, team_abilities, percentages]  # [sykes, rankings]
-    timdHeaders = [header, calculated, climb]
+    timdHeaders = [timdHeader, calculated, climb]
 
     wb = openpyxl.load_workbook('export.xlsx')
 
@@ -109,12 +109,18 @@ def export_spreadsheet():
             raw_timd_sheet.cell(row=current_timd_row, column=1).value = timd['team_number']
             raw_timd_sheet.cell(row=current_timd_row, column=2).value = timd['match_number']
 
-            for header in timdHeaders:
-                for key in header[0]:
-                    timd_component_header = timd[header[1]]
-                    if key in timd_component_header.keys():
-                        raw_timd_sheet.cell(row=current_timd_row, column=current_column).value = timd_component_header[key]
+            if timd['header']['noShow']:
+                for key in timdHeader[0]:
+                    raw_timd_sheet.cell(row=current_timd_row, column=current_column).value = timd['header'][key]
                     current_column += 1
+
+            else:
+                for header in timdHeaders:
+                    for key in header[0]:
+                        timd_component_header = timd[header[1]]
+                        if key in timd_component_header.keys():
+                            raw_timd_sheet.cell(row=current_timd_row, column=current_column).value = timd_component_header[key]
+                        current_column += 1
 
             current_timd_row += 1
 
