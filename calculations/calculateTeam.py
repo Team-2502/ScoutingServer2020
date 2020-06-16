@@ -138,7 +138,9 @@ def calculate_team(team_number, last_timd, test=False):
 
     percentages['percentOfTotalTeleopDefending'] = round(100 * (team['totals']['timeDefending'] / (len(timds) * 135))) if len(timds) is not 0 else 0
 
-    percentages['percentOfTimeIncap'] = round(100 * (team['totals']['timeIncap'] / (len(timds) * 150))) if len(timds) is not 0 else 0
+    percentages['percentOfTimeIncap'] = round(100 * (team['totals']['timeIncap'] / (len(timds) * 135))) if len(timds) is not 0 else 0
+
+    percentages['percentOfTimeOffense'] = (100 - percentages['percentOfTotalTeleopDefending'] - percentages['percentOfTimeIncap'])
 
     percentages['percentOfMatchesNoShow'] = round(100 * (num_no_shows / num_matches))
 

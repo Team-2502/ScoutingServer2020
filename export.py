@@ -55,13 +55,14 @@ def export_spreadsheet():
     #rankings = ([key for key in teams[0]['rankings'].keys()], 'rankings')
     team_abilities = ([key for key in teams[0]['team_abilities'].keys()], 'team_abilities')
     percentages = ([key for key in teams[0]['percentages'].keys()], 'percentages')
+    p75s = ([key for key in teams[0]['p75s'].keys()], 'p75s')
     # sykes = ([key for key in teams[0]['sykes'].keys()], 'sykes')
 
     timdHeader = ([key for key in timds[0]['header'].keys()], 'header')
     climb = ([key for key in timds[0]['climb'].keys()], 'climb')
     calculated = ([key for key in timds[0]['calculated'].keys()], 'calculated')
 
-    headers = [totals, l3ms, SDs, maxes, team_abilities, percentages]  # [sykes, rankings]
+    headers = [totals, l3ms, SDs, maxes, team_abilities, percentages, p75s]  # [sykes, rankings]
     timdHeaders = [timdHeader, calculated, climb]
 
     wb = openpyxl.load_workbook('export.xlsx')
