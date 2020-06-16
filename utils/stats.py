@@ -74,7 +74,7 @@ def percent_success_shooting(timds, time, action, *types):
     fails = total_filter_values((filter_timeline_actions([timd for timd in timds], actionType=action, actionTime=time)), 'misses')
 
     if successes + fails == 0:
-        return None
+        return 0
 
     return round(100 * (successes/(successes+fails)))
 

@@ -1,8 +1,17 @@
 import openpyxl
-import json
-import os
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
+import pyrebase
+
+import sensitiveInfo
+
+
+pyrebase_config = {
+        "apiKey": sensitiveInfo.firebase_api_key(),
+        "authDomain": "development-2021.firebaseapp.com",
+        "databaseURL": "https://development-2021.firebaseio.com",
+        "storageBucket": "development-2021.appspot.com"
+    }
 
 
 def upload_to_drive(filename):
@@ -44,23 +53,26 @@ def upload_to_drive(filename):
 
 
 def export_spreadsheet():
-    homeDir = os.path.expanduser('~')
-    teams = [json.loads(open(os.path.join(homeDir, 'MNDU2-2020Server/cache/teams/', team)).read()) for team in os.listdir(os.path.join(homeDir, 'MNDU2-2020Server/cache/teams')) if team != '.DS_Store']
-    timds = [json.loads(open(os.path.join(homeDir, 'MNDU2-2020Server/cache/TIMDs/', timd)).read()) for timd in os.listdir(os.path.join(homeDir, 'MNDU2-2020Server/cache/TIMDs')) if timd != '.DS_Store']
+    firebase = pyrebase.initialize_app(pyrebase_config)
+    database = firebase.database()
 
-    totals = ([key for key in teams[0]['totals'].keys()], 'totals')
-    l3ms = ([key for key in teams[0]['l3ms'].keys()], 'l3ms')
-    SDs = ([key for key in teams[0]['SDs'].keys()], 'SDs')
-    maxes = ([key for key in teams[0]['maxes'].keys()], 'maxes')
-    #rankings = ([key for key in teams[0]['rankings'].keys()], 'rankings')
-    team_abilities = ([key for key in teams[0]['team_abilities'].keys()], 'team_abilities')
-    percentages = ([key for key in teams[0]['percentages'].keys()], 'percentages')
-    p75s = ([key for key in teams[0]['p75s'].keys()], 'p75s')
-    # sykes = ([key for key in teams[0]['sykes'].keys()], 'sykes')
+    teams = database.child("teams").get().each()
 
-    timdHeader = ([key for key in timds[0]['header'].keys()], 'header')
-    climb = ([key for key in timds[0]['climb'].keys()], 'climb')
-    calculated = ([key for key in timds[0]['calculated'].keys()], 'calculated')
+    team1 = teams[0].val()
+
+    totals = ([key for key in team1['totals'].keys()], 'totals')
+    l3ms = ([key for key in team1['l3ms'].keys()], 'l3ms')
+    SDs = ([key for key in team1['SDs'].keys()], 'SDs')
+    maxes = ([key for key in team1['maxes'].keys()], 'maxes')
+    # rankings = ([key for key in team1['rankings'].keys()], 'rankings')
+    team_abilities = ([key for key in team1['team_abilities'].keys()], 'team_abilities')
+    percentages = ([key for key in team1['percentages'].keys()], 'percentages')
+    p75s = ([key for key in team1['p75s'].keys()], 'p75s')
+    # sykes = ([key for key in team1['sykes'].keys()], 'sykes')
+
+    timdHeader = ([key for key in team1['timds'][0]['header'].keys()], 'header')
+    climb = ([key for key in team1['timds'][0]['climb'].keys()], 'climb')
+    calculated = ([key for key in team1['timds'][0]['calculated'].keys()], 'calculated')
 
     headers = [totals, l3ms, SDs, maxes, team_abilities, percentages, p75s]  # [sykes, rankings]
     timdHeaders = [timdHeader, calculated, climb]
@@ -95,6 +107,7 @@ def export_spreadsheet():
     current_team_row = 2
 
     for team in teams:
+        team = team.val()
         current_column = 2
         raw_team_sheet.cell(row=current_team_row, column=1).value = team['teamNumber']
 

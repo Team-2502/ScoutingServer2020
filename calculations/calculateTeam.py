@@ -1,5 +1,3 @@
-import os
-import json
 import pyrebase
 
 import sensitiveInfo
@@ -51,31 +49,29 @@ PERCENT_SUCCESS_DATA_FIELDS = {
     'shootingPercentageHighTeleop': {'innerPort', 'outerPort'}
 }
 
-
-def get_team(team_number):
-    homeDir = os.path.expanduser('~')
-    teams = os.listdir(os.path.join(homeDir, 'MNDU2-2020Server/cache/teams'))
-    return [json.loads(open(os.path.join(homeDir, 'MNDU2-2020Server/cache/teams/', team)).read()) for team in teams if team != '.DS_Store' and int(team.split('.')[0]) == int(team_number)][0]
-
-
-def get_timds(team_number):
-    homeDir = os.path.expanduser('~')
-    TIMDs = [timd for timd in os.listdir(os.path.join(homeDir, 'MNDU2-2020Server/cache/TIMDs')) if timd != '.DS_Store']
-    return [json.loads(open(os.path.join(homeDir, 'MNDU2-2020Server/cache/TIMDs/', TIMD)).read()) for TIMD in TIMDs if int(TIMD.split('-')[1]) == int(team_number)]
+pyrebase_config = {
+        "apiKey": sensitiveInfo.firebase_api_key(),
+        "authDomain": "development-2021.firebaseapp.com",
+        "databaseURL": "https://development-2021.firebaseio.com",
+        "storageBucket": "development-2021.appspot.com"
+    }
 
 
 # If testing last_timd is actually a list of all timds that make up the team, otherwise just the last timd
 def calculate_team(team_number, last_timd, test=False):
+    firebase = pyrebase.initialize_app(pyrebase_config)
+    database = firebase.database()
+
     if test is not False:
         timds = [calculateTIMD.calculate_timd(timd, "test", True) for timd in last_timd]
         team = {'teamNumber': team_number, 'timds': sorted(timds, key=lambda timd: timd['header']['matchNumber'])}
     else:
-        try:
-            team = get_team(team_number)
-            timds = get_timds(team_number)
-        except IndexError:
+        team = database.child('teams').child(team_number).get().val()
+        if team is None:
             team = {'teamNumber': last_timd['team_number']}
             timds = [last_timd]
+        else:
+            timds = team['timds']
 
         team['timds'] = sorted(timds, key=lambda timd: timd['header']['matchNumber'])
 
@@ -131,8 +127,8 @@ def calculate_team(team_number, last_timd, test=False):
 
     percentages['leftInitLine'] = round(100 * (len([timd for timd in timds if timd['header']['leftLine']]) / len(timds))) if len(timds) is not 0 else 0
 
-    percentages['climbSuccessRate'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) / (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='fell')) + len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging'))))) if len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) != 0 else None
-    percentages['levelClimbPercentage'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', levelClimb=True)) / len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')))) if len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) != 0 else None
+    percentages['climbSuccessRate'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) / (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='fell')) + len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging'))))) if len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) != 0 else 0
+    percentages['levelClimbPercentage'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', levelClimb=True)) / len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')))) if len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) != 0 else 0
     percentages['parkPercentage'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='parked')) / len(timds))) if len(timds) is not 0 else 0
     percentages['climbPercentage'] = round(100 * (len(stats.filter_timeline_actions(timds, actionType='climb', climbHeight='hanging')) / len(timds))) if len(timds) is not 0 else 0
 
@@ -148,33 +144,11 @@ def calculate_team(team_number, last_timd, test=False):
 
     # team['rankings'] = calculations.calculateRankings.calculate_rankings(int(team_number), team)
 
-    homeDir = os.path.expanduser('~')
-
-    pyrebase_config = {
-        "apiKey": sensitiveInfo.firebase_api_key(),
-        "authDomain": "development-2021.firebaseapp.com",
-        "databaseURL": "https://development-2021.firebaseio.com",
-        "storageBucket": "development-2021.appspot.com"
-    }
-
     if test is not False:
-        firebase = pyrebase.initialize_app(pyrebase_config)
-        database = firebase.database()
         database.child("teams").child("test").set(team)
 
     else:
         print(f'{team_number} calculated')
-
-        firebase = pyrebase.initialize_app(pyrebase_config)
-        database = firebase.database()
-
-        # Save data in local cache
-        if not os.path.exists(os.path.join(homeDir, 'MNDU2-2020Server/cache/teams')):
-            os.makedirs(os.path.join(homeDir, 'MNDU2-2020Server/cache/teams'))
-
-        with open(os.path.join(homeDir, f'MNDU2-2020Server/cache/teams/{team_number}.json'), 'w') as file:
-            json.dump(team, file)
-        print(f'{team_number} cached')
 
         database.child("teams").child(team_number).set(team)
         print(f'{team_number} uploaded to Firebase\n')

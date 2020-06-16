@@ -1,7 +1,5 @@
 import sensitiveInfo
 
-import json
-import os
 import pyrebase
 
 from utils import *
@@ -60,8 +58,6 @@ def calculate_timd(compressed_timd, timd_name, test=False):
     if not test:
         print(f'{timd_name} decompressed')
 
-        homeDir = os.path.expanduser('~')
-
         pyrebase_config = {
             "apiKey": sensitiveInfo.firebase_api_key(),
             "authDomain": "mndu2-2020.firebaseapp.com",
@@ -71,14 +67,6 @@ def calculate_timd(compressed_timd, timd_name, test=False):
 
         firebase = pyrebase.initialize_app(pyrebase_config)
         database = firebase.database()
-
-        # Save data in local cache
-        if not os.path.exists(os.path.join(homeDir, 'MNDU2-2020Server/cache/TIMDs')):
-            os.makedirs(os.path.join(homeDir, 'MNDU2-2020Server/cache/TIMDs'))
-
-        with open(os.path.join(homeDir, f'MNDU2-2020Server/cache/TIMDs/{timd_name}.json'), 'w') as file:
-            json.dump(decompressed_timd, file)
-        print(f'{timd_name} cached')
 
         database.child("TIMDs").child(timd_name).set(decompressed_timd)
         database.child("decompedTIMDs").child(timd_name).set(compressed_timd)
