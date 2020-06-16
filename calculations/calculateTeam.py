@@ -49,17 +49,10 @@ PERCENT_SUCCESS_DATA_FIELDS = {
     'shootingPercentageHighTeleop': {'innerPort', 'outerPort'}
 }
 
-pyrebase_config = {
-        "apiKey": sensitiveInfo.firebase_api_key(),
-        "authDomain": "development-2021.firebaseapp.com",
-        "databaseURL": "https://development-2021.firebaseio.com",
-        "storageBucket": "development-2021.appspot.com"
-    }
-
 
 # If testing last_timd is actually a list of all timds that make up the team, otherwise just the last timd
 def calculate_team(team_number, last_timd, test=False):
-    firebase = pyrebase.initialize_app(pyrebase_config)
+    firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
     database = firebase.database()
 
     if test is not False:

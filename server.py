@@ -6,16 +6,7 @@ import pyrebase
 import time
 import slack
 
-homeDir = os.path.expanduser('~')
-
-pyrebase_config = {
-        "apiKey": sensitiveInfo.firebase_api_key(),
-        "authDomain": "mndu2-2020.firebaseapp.com",
-        "databaseURL": "https://mndu2-2020.firebaseio.com",
-        "storageBucket": "mndu2-2020.appspot.com"
-    }
-
-firebase = pyrebase.initialize_app(pyrebase_config)
+firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_mndu2())
 database = firebase.database()
 
 

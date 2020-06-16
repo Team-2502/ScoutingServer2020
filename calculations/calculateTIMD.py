@@ -58,14 +58,7 @@ def calculate_timd(compressed_timd, timd_name, test=False):
     if not test:
         print(f'{timd_name} decompressed')
 
-        pyrebase_config = {
-            "apiKey": sensitiveInfo.firebase_api_key(),
-            "authDomain": "mndu2-2020.firebaseapp.com",
-            "databaseURL": "https://mndu2-2020.firebaseio.com",
-            "storageBucket": "mndu2-2020.appspot.com"
-        }
-
-        firebase = pyrebase.initialize_app(pyrebase_config)
+        firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
         database = firebase.database()
 
         database.child("TIMDs").child(timd_name).set(decompressed_timd)

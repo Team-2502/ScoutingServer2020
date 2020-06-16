@@ -6,14 +6,6 @@ import pyrebase
 import sensitiveInfo
 
 
-pyrebase_config = {
-        "apiKey": sensitiveInfo.firebase_api_key(),
-        "authDomain": "development-2021.firebaseapp.com",
-        "databaseURL": "https://development-2021.firebaseio.com",
-        "storageBucket": "development-2021.appspot.com"
-    }
-
-
 def upload_to_drive(filename):
     gauth = GoogleAuth()
     # Try to load saved client credentials
@@ -53,7 +45,7 @@ def upload_to_drive(filename):
 
 
 def export_spreadsheet():
-    firebase = pyrebase.initialize_app(pyrebase_config)
+    firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
     database = firebase.database()
 
     teams = database.child("teams").get().each()
