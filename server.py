@@ -74,7 +74,7 @@ def run_server_comp():
                         print("Data uploaded to Drive\n")
                         slack_client.chat_postMessage(
                             channel="UC3TC3PN3",
-                            text="All TIMDs for Match " + str(current_unscouted_match) + "processed and data exported"
+                            text="All TIMDs for Match " + str(current_unscouted_match) + " processed and data exported"
                         )
                         database.child('config').child('currentMatch').set(current_unscouted_match + 1)
 
