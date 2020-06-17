@@ -8,7 +8,7 @@ Currently requires the serial numbers of the tablets you will be using to send t
 
 ## Usage
 
-###Requirements
+### Requirements
 1. On school Macs install Homebrew locally and then install Heroku via Homebrew, otherwise follow instructions on Heroku website
 
 ### Deploying to Heroku
