@@ -11,13 +11,13 @@ Currently requires the serial numbers of the tablets you will be using to send t
 ###Requirements
 1. On school Macs install Homebrew locally and then install Heroku via Homebrew, otherwise follow instructions on Heroku website
 
-###Deploying to Heroku
+### Deploying to Heroku
 
 1. Create a new branch called prod-heroku and commit sensitiveInfo.py with Slack/TBA/Firebase API keys and other info
 
 2. Deploy to Heroku with `git push heroku prod-heroku:master`
 
-###Running code via Heroku
+### Running code via Heroku
 
 1. Run Python using `heroku run python3 [file]`
 
@@ -27,7 +27,7 @@ Currently requires the serial numbers of the tablets you will be using to send t
 
 4. Kill all active dynos using `heroku ps:stop run` or a particular dyno using `heroku ps:stop run.[number]`
 
-##Other
+## Other
 
 [Pyrebase API reference](https://github.com/thisbejim/Pyrebase)
 
