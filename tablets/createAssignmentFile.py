@@ -1,21 +1,10 @@
 import tbapy
-import os
-import json
 import pyrebase
 
-# File with functions which return info such as API keys and passwords
 import sensitiveInfo
 
-homeDir = os.path.expanduser('~')
 
-# Firebase setup
-pyrebase_config = {
-        "apiKey": sensitiveInfo.firebase_api_key(),
-        "authDomain": "mmr-2019.firebaseapp.com",
-        "databaseURL": "https://mmr-2019.firebaseio.com",
-        "storageBucket": "mmr-2019.appspot.com",
-    }
-firebase = pyrebase.initialize_app(pyrebase_config)
+firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
 database = firebase.database()
 
 # Setup for tbapy
@@ -25,7 +14,6 @@ event = "2020mndu2"
 # Get a list of all qualifying matches at an event
 try:
     matches = [match for match in tba.event_matches(event, simple=True) if match['comp_level'] == 'qm']
-    print(matches[0])
 
 # TODO Make this except clause more specfic
 except:
@@ -54,12 +42,5 @@ for match in matches:
 
     full_assignments["QM "+str(match_num)] = assignments
 
-# Save file as json and txt
-with open(os.path.join(homeDir, 'MMR-2019Server/assignments/BackupAssignments.json'), 'w') as f:
-    json.dump(full_assignments, f)
-
-with open(os.path.join(homeDir, 'MMR-2019Server/assignments/BackupAssignments.txt'), 'w') as f:
-    f.write(json.dumps(full_assignments))
-
 # Upload assignments to Firebase
-database.child("assignments").child("BackupAssignments").set(json.dumps(full_assignments))
+database.child("config").child("scoutAssignments").set(full_assignments)
