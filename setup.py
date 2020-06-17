@@ -1,12 +1,8 @@
-import os
+import pyrebase
 
-homeDir = os.path.expanduser('~')
+import sensitiveInfo
 
-if not os.path.exists(os.path.join(homeDir, 'MNDU2-2020Server/config')):
-    os.makedirs(os.path.join(homeDir, 'MNDU2-2020Server/config'))
-if not os.path.exists(os.path.join(homeDir, 'MMR-2019Server/assignments')):
-    os.makedirs(os.path.join(homeDir, 'MNDU2-2020Server/assignments'))
-if not os.path.exists(os.path.join(homeDir, 'MNDU2-2020Server/cache')):
-    os.makedirs(os.path.join(homeDir, 'MNDU2-2020Server/cache'))
-    os.makedirs(os.path.join(homeDir, 'MNDU2-2020Server/cache/teams'))
-    os.makedirs(os.path.join(homeDir, 'MNDU2-2020Server/cache/TIMDs'))
+firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
+database = firebase.database()
+
+database.child('config').child('currentMatch').set(0)
