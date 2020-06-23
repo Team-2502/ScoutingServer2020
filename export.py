@@ -38,7 +38,7 @@ def upload_to_drive(filename):
     # https://stackoverflow.com/a/22934892
     # https://stackoverflow.com/a/40236586
     drive_file = drive.CreateFile({'title': filename,
-                                   "parents": [{"kind": "drive#fileLink", "id": "16HQEzd62UcJdDk5_yld39Ao9ncYffUKt"}]})
+                                   "parents": [{"kind": "drive#fileLink", "id": os.environ['drive_file_id']}]})
 
     # Read file and set it as a content of this instance.
     drive_file.SetContentFile("export.xlsx")
