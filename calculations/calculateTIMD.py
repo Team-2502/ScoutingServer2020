@@ -1,4 +1,5 @@
-import sensitiveInfo
+import os
+import ast
 
 import pyrebase
 
@@ -58,7 +59,7 @@ def calculate_timd(compressed_timd, timd_name, test=False):
     if not test:
         print(f'{timd_name} decompressed')
 
-        firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
+        firebase = pyrebase.initialize_app(ast.literal_eval(os.environ['firebase_info']))
         database = firebase.database()
 
         database.child("TIMDs").child(timd_name).set(decompressed_timd)

@@ -1,9 +1,10 @@
-import sensitiveInfo
 from calculations import calculateTIMD, calculateTeam
 import export
 import pyrebase
 import time
 import slack
+import ast
+import os
 
 
 def reset_timds(database):
@@ -18,7 +19,7 @@ def get_num_timds_for_match(match_number, database):
 
 
 def run_server_testing():
-    firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
+    firebase = pyrebase.initialize_app(ast.literal_eval(os.environ['firebase_info']))
     database = firebase.database()
 
     rawTIMDs = database.child('rawTIMDs').get()
@@ -37,11 +38,12 @@ def run_server_testing():
 
 
 def run_server_comp():
-    firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
+    firebase = pyrebase.initialize_app(ast.literal_eval(os.environ['firebase_info']))
     database = firebase.database()
 
-    slack_token = sensitiveInfo.slack_api_key()
+    slack_token = os.environ['slack_api_key']
     slack_client = slack.WebClient(token=slack_token)
+    slack_channel = os.environ['head_scout_slack_id']
 
     timds_for_current_match = 0
 
@@ -74,7 +76,7 @@ def run_server_comp():
                             export.upload_to_drive(" Post QM" + str(current_unscouted_match) + "Full Export")
                             print("Data uploaded to Drive\n")
                             slack_client.chat_postMessage(
-                                channel="UC3TC3PN3",
+                                channel=slack_channel,
                                 text="All TIMDs for Match " + str(current_unscouted_match) + " processed and data exported"
                             )
                             database.child('config').child('currentMatch').set(current_unscouted_match + 1)
@@ -82,7 +84,7 @@ def run_server_comp():
                     elif match_num > current_unscouted_match:
                         print("WARNING: MISSING TIMD FOR MATCH " + str(current_unscouted_match))
                         slack_client.chat_postMessage(
-                            channel="UC3TC3PN3",
+                            channel=slack_channel,
                             text="WARNING: TIMD for Match " + str(match_num) + " uploaded before Match " +
                                  str(current_unscouted_match) + " had 6 TIMDs!"
                         )
@@ -99,12 +101,12 @@ def run_server_comp():
                             export.upload_to_drive(" Post QM" + str(match_num) + "Full Export")
                             print("Data uploaded to Drive\n")
                             slack_client.chat_postMessage(
-                                channel="UC3TC3PN3",
+                                channel=slack_channel,
                                 text="All TIMDs for Match " + str(match_num) + "processed and data exported"
                             )
                         elif get_num_timds_for_match(match_num, database) > 6:
                             slack_client.chat_postMessage(
-                                channel="UC3TC3PN3",
+                                channel=slack_channel,
                                 text="More than 6 TIMDs processed for Match " + str(match_num)
                             )
                             # TODO Delete the extra one
@@ -112,7 +114,7 @@ def run_server_comp():
                             print("WARNING: Still missing " + str(6 - get_num_timds_for_match(match_num, database)) + " TIMDs for Match " + str(match_num))
             except Exception as e:
                 slack_client.chat_postMessage(
-                    channel="UC3TC3PN3",
+                    channel=slack_channel,
                     text="Exception occurred: " + str(e)
                 )
                 exit()

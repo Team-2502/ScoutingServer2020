@@ -1,9 +1,10 @@
+import os
+import ast
+
 import openpyxl
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 import pyrebase
-
-import sensitiveInfo
 
 
 def upload_to_drive(filename):
@@ -45,7 +46,7 @@ def upload_to_drive(filename):
 
 
 def export_spreadsheet():
-    firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
+    firebase = pyrebase.initialize_app(ast.literal_eval(os.environ['firebase_info']))
     database = firebase.database()
 
     teams = database.child("teams").get().each()
@@ -56,7 +57,6 @@ def export_spreadsheet():
     l3ms = ([key for key in team1['l3ms'].keys()], 'l3ms')
     SDs = ([key for key in team1['SDs'].keys()], 'SDs')
     maxes = ([key for key in team1['maxes'].keys()], 'maxes')
-    # rankings = ([key for key in team1['rankings'].keys()], 'rankings')
     team_abilities = ([key for key in team1['team_abilities'].keys()], 'team_abilities')
     percentages = ([key for key in team1['percentages'].keys()], 'percentages')
     p75s = ([key for key in team1['p75s'].keys()], 'p75s')
@@ -66,7 +66,7 @@ def export_spreadsheet():
     climb = ([key for key in team1['timds'][0]['climb'].keys()], 'climb')
     calculated = ([key for key in team1['timds'][0]['calculated'].keys()], 'calculated')
 
-    headers = [totals, l3ms, SDs, maxes, team_abilities, percentages, p75s]  # [sykes, rankings]
+    headers = [totals, l3ms, SDs, maxes, team_abilities, percentages, p75s]  # [sykes]
     timdHeaders = [timdHeader, calculated, climb]
 
     wb = openpyxl.load_workbook('export.xlsx')

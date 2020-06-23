@@ -1,6 +1,8 @@
 import pyrebase
 
-import sensitiveInfo
+import ast
+import os
+
 from utils import *
 from calculations import calculateTIMD
 
@@ -52,7 +54,7 @@ PERCENT_SUCCESS_DATA_FIELDS = {
 
 # If testing last_timd is actually a list of all timds that make up the team, otherwise just the last timd
 def calculate_team(team_number, last_timd, test=False):
-    firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
+    firebase = pyrebase.initialize_app(ast.literal_eval(os.environ['firebase_info']))
     database = firebase.database()
 
     if test is not False:
@@ -134,8 +136,6 @@ def calculate_team(team_number, last_timd, test=False):
     percentages['percentOfMatchesNoShow'] = round(100 * (num_no_shows / num_matches))
 
     team['percentages'] = percentages
-
-    # team['rankings'] = calculations.calculateRankings.calculate_rankings(int(team_number), team)
 
     if test is not False:
         database.child("teams").child("test").set(team)

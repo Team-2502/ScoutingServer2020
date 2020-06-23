@@ -1,15 +1,14 @@
 import tbapy
 import pyrebase
+import os
+import ast
 
-import sensitiveInfo
-
-
-firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
+firebase = pyrebase.initialize_app(ast.literal_eval(os.environ['firebase_info']))
 database = firebase.database()
 
 # Setup for tbapy
-tba = tbapy.TBA(sensitiveInfo.tba_api_key())
-event = "2020mndu2"
+tba = tbapy.TBA(os.environ['tba_api_key'])
+event = os.environ['event']
 
 # Get a list of all qualifying matches at an event
 try:
