@@ -1,8 +1,8 @@
 import pyrebase
+import os
+import ast
 
-import sensitiveInfo
-
-firebase = pyrebase.initialize_app(sensitiveInfo.firebase_info_dev_2021())
+firebase = pyrebase.initialize_app(ast.literal_eval(os.environ['firebase_info']))
 database = firebase.database()
 
-database.child('config').child('currentMatch').set(1)
+database.child('config').child('currentMatch').set(8)
