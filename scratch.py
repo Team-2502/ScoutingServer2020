@@ -31,8 +31,10 @@ print('title: %s, mimeType: %s' % (my_file['title'], my_file['mimeType']))
 my_file.GetContentFile('download.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 wb = openpyxl.load_workbook('download.xlsx')
-raw_team_sheet = wb.create_sheet('Raw Teams Export')
-raw_team_sheet.cell(row=1, column=1).value = 'Number'
+raw_team_sheet = wb.get_sheet_by_name('Sheet2')
+raw_team_sheet.cell(row=3, column=10).value = 18
+
+wb.save('download.xlsx')
 
 my_file.SetContentFile("download.xlsx")
 my_file.Upload()  # Upload the file.
