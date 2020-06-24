@@ -135,3 +135,10 @@ def export_spreadsheet():
 
 if __name__ == "__main__":
     export_spreadsheet()
+
+
+# Download spreadsheet from excel
+# Open via openpyxl
+# Edit the two sheets with the updated data
+# Save the spreadsheet
+# Reupload the file with changes
