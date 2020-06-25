@@ -69,3 +69,7 @@ def export_spreadsheet():
 
     team_export.insert_rows(0, values=team_export_values)
     timd_export.insert_rows(0, values=timd_export_values)
+
+
+if __name__ == '__main__':
+    export_spreadsheet()
