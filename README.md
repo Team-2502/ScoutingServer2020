@@ -2,10 +2,6 @@
 
 The server for the scouting system used by Team 2502 during Infinite Recharge
 
-
-Currently requires the serial numbers of the tablets you will be using to send the match schedule
-
-
 ## Usage
 
 ### Requirements
@@ -31,3 +27,7 @@ Currently requires the serial numbers of the tablets you will be using to send t
 [Pyrebase API reference](https://github.com/thisbejim/Pyrebase)
 
 [tbapy API reference](https://github.com/AndrewLester/tbapy)
+
+[pygsheets API reference](https://pygsheets.readthedocs.io/en/latest/index.html)
+
+[slackclient API reference](https://github.com/slackapi/python-slackclient#getting-started-tutorial)
