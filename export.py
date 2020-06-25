@@ -13,11 +13,18 @@ def export_spreadsheet():
     team_export.clear()
     timd_export.clear()
 
+    try:
+        scout_export = wb.worksheet_by_title("Scout Data Export")
+        scout_export.clear()
+    except pygsheets.WorksheetNotFound:
+        scout_export = wb.add_worksheet("Scout Data Export")
+
+    scout_amounts = {}
+
     firebase = pyrebase.initialize_app(ast.literal_eval(os.environ['firebase_info']))
     database = firebase.database()
 
     teams = database.child("teams").get().each()
-
     team1 = teams[0].val()
 
     totals = ([key for key in team1['totals'].keys()], 'totals')
@@ -54,6 +61,13 @@ def export_spreadsheet():
         for timd in team['timds']:
             timd_values = [timd['team_number'], timd['match_number']]
 
+            scout = timd['header']['scoutKey']
+
+            if scout not in scout_amounts.keys():
+                scout_amounts[scout] = 1
+            else:
+                scout_amounts[scout] += 1
+
             if timd['header']['noShow']:
                 for key in timdHeader[0]:
                     timd_values.append(timd['header'][key])
@@ -69,6 +83,7 @@ def export_spreadsheet():
 
     team_export.insert_rows(0, values=team_export_values)
     timd_export.insert_rows(0, values=timd_export_values)
+    scout_export.insert_rows(0, values=[scout_amounts.keys(), scout_amounts.values()])
 
 
 if __name__ == '__main__':
