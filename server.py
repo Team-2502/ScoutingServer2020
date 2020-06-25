@@ -37,7 +37,7 @@ def run_server_testing():
     export.export_spreadsheet()
 
 
-def run_server_comp():
+def run_server():
     firebase = pyrebase.initialize_app(ast.literal_eval(os.environ['firebase_info']))
     database = firebase.database()
 
@@ -73,8 +73,6 @@ def run_server_comp():
 
                             export.export_spreadsheet()
                             print("Data exported")
-                            export.upload_to_drive(" Post QM" + str(current_unscouted_match) + "Full Export")
-                            print("Data uploaded to Drive\n")
                             slack_client.chat_postMessage(
                                 channel=slack_channel,
                                 text="All TIMDs for Match " + str(current_unscouted_match) + " processed and data exported"
@@ -98,8 +96,6 @@ def run_server_comp():
                             timds_for_current_match = 0
                             export.export_spreadsheet()
                             print("Data exported")
-                            export.upload_to_drive(" Post QM" + str(match_num) + "Full Export")
-                            print("Data uploaded to Drive\n")
                             slack_client.chat_postMessage(
                                 channel=slack_channel,
                                 text="All TIMDs for Match " + str(match_num) + "processed and data exported"
@@ -109,7 +105,6 @@ def run_server_comp():
                                 channel=slack_channel,
                                 text="More than 6 TIMDs processed for Match " + str(match_num)
                             )
-                            # TODO Delete the extra one
                         else:
                             print("WARNING: Still missing " + str(6 - get_num_timds_for_match(match_num, database)) + " TIMDs for Match " + str(match_num))
             except Exception as e:
@@ -121,4 +116,4 @@ def run_server_comp():
 
 
 if __name__ == "__main__":
-    run_server_comp()
+    run_server()
