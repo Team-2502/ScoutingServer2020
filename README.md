@@ -2,6 +2,10 @@
 
 The server for the scouting system used by Team 2502 during Infinite Recharge
 
+Downloads and processes data points from a Firebase instance and converts the processed data into a spreadsheet before updating a Google Sheet
+
+![Imgur](https://i.imgur.com/GM747lV.png)
+
 ## Usage
 
 ### Requirements
